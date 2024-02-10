@@ -6,11 +6,11 @@ special_pyth_trip(K) ->
     special_pyth_trip(1, 1, math:pow(2, 0.5), K).
 
 special_pyth_trip(A, B, C, K) when A + B + C == K -> {A, B, C};
-special_pyth_trip(A, B, C, K) when A + B + C < K -> 
-    special_pyth_trip(A, B + 1, math:pow(A * A + (B + 1) * (B + 1), 1/2), K);
+special_pyth_trip(A, B, C, K) when A + B + C < K ->
+    special_pyth_trip(A, B + 1, math:pow(A * A + math:pow((B + 1), 2), 1 / 2), K);
 special_pyth_trip(A, B, _, K) when A + B > K -> {};
 special_pyth_trip(A, _, _, K) ->
-    special_pyth_trip(A + 1, A + 1, math:pow(2 * (A + 1) * (A + 1), 1/2), K).
+    special_pyth_trip(A + 1, A + 1, math:pow(2 * (A + 1) * (A + 1), 1 / 2), K).
 
 %rec
 is_valid_pyth(A, B, C, K) when A + B + C == K -> {A, B, C};
@@ -31,9 +31,9 @@ is_spicial(_, Acc) -> Acc.
 
 get_fold_special_list(K) -> get_fold_special_list(1, 1, math:pow(2, 0.5), K).
 
-get_fold_special_list(A, B, C, K) when B < K/2 -> 
+get_fold_special_list(A, B, C, K) when B < K/2 ->
     [{A, B, C, K} | get_fold_special_list(A, B + 1, math:pow(A * A + (B + 1) * (B + 1), 0.5), K)];
-get_fold_special_list(A, B, C, K) when A < K/2 -> 
+get_fold_special_list(A, B, C, K) when A < K/2 ->
     [{A, B, C, K} | get_fold_special_list(A + 1, A + 1, math:pow(2 * (A + 1) * (A + 1), 0.5), K)];
 get_fold_special_list(_, _, _, _) -> [].
 
