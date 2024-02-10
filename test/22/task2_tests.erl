@@ -3,12 +3,12 @@
 
 % Reduce with tail recursion
 names_score_test() ->
-    ?assertEqual(task2:names_score(), 324536).
+    ?assertEqual(task2:names_score(), 850081394).
 
 % Reduce with recursion
 names_score_t_test() ->
-    ?assertEqual(task2:names_score_r(), 324536).
+    ?assertEqual(task2:names_score_r(), 850081394).
 
 % Fold
 names_score_f_test() ->
-    ?assertEqual(task2:names_score_f(), 324536).
+    ?assertEqual(task2:names_score_f(), 850081394).
