@@ -111,49 +111,49 @@ int main()
 ### Реализация c рекурсией
 
 ```erlang
-special_pyth_trip_r(K)->
+is_valid_pyth(A, B, C, K) when A + B + C == K -> {A, B, C};
+is_valid_pyth(A, B, C, K) when A + B + C < K -> special_pyth_trip_r(A, B + 1, K);
+is_valid_pyth(A, B, _, K) when A + B > K -> {};
+is_valid_pyth(A, _, _, K) -> special_pyth_trip_r(A + 1, A + 1, K).
+
+special_pyth_trip_r(K) ->
     special_pyth_trip_r(1, 1, K).
 
-special_pyth_trip_r(A, B, K)->
-    C = math:pow(A*A + B*B, 0.5),
-    if  A + B + C == K ->
-            {A, B, C};
-        A + B + C < K ->
-            special_pyth_trip_r(A, B+1, K);
-        A + B > K->
-            {};
-        A + B + C > K ->
-            special_pyth_trip_r(A+1, A+1, K)
-    end.
+special_pyth_trip_r(A, B, K) ->
+    C = math:pow(A * A + B * B, 0.5),
+    is_valid_pyth(A, B, C, K).
 ```
 
 ### Реализация с хвостовой рекурсией
 
 ```erlang
-special_pyth_trip(K)->
+special_pyth_trip(K) ->
     special_pyth_trip(1, 1, math:pow(2, 0.5), K).
 
 special_pyth_trip(A, B, C, K) when A + B + C == K -> {A, B, C};
-special_pyth_trip(A, B, C, K) when A + B + C < K -> special_pyth_trip(A, B+1, math:pow(A*A + (B+1)*(B+1), 0.5), K);
-special_pyth_trip(A, B, C, K) when A + B > K -> {};
-special_pyth_trip(A, B, C, K)-> special_pyth_trip(A+1, A+1, math:pow(2*(A+1)*(A+1), 0.5), K).
+special_pyth_trip(A, B, C, K) when A + B + C < K ->
+    special_pyth_trip(A, B + 1, math:pow(A * A + math:pow((B + 1), 2), 1 / 2), K);
+special_pyth_trip(A, B, _, K) when A + B > K -> {};
+special_pyth_trip(A, _, _, K) ->
+    special_pyth_trip(A + 1, A + 1, math:pow(2 * (A + 1) * (A + 1), 1 / 2), K).
 ```
 
 ### Реализация со свёрткой
 
 ```erlang
-% Fold
 is_spicial({A, B, C, K}, {}) when A + B + C == K -> {A, B, C};
-is_spicial(_, Acc)-> Acc.
+is_spicial(_, Acc) -> Acc.
 
-get_fold_special_list(K)-> get_fold_special_list(1, 1, math:pow(2, 0.5), K).
+get_fold_special_list(K) -> get_fold_special_list(1, 1, math:pow(2, 0.5), K).
 
-get_fold_special_list(A, B, C, K) when B < K/2-> [{A, B, C, K}| get_fold_special_list(A, B+1, math:pow(A*A + (B+1)*(B+1), 0.5), K)];
-get_fold_special_list(A, B, C, K) when A < K/2-> [{A, B, C, K}| get_fold_special_list(A+1, A+1, math:pow(2*(A+1)*(A+1), 0.5), K)];
-get_fold_special_list(A, B, C, K) -> [].
+get_fold_special_list(A, B, C, K) when B < K/2 ->
+    [{A, B, C, K} | get_fold_special_list(A, B + 1, math:pow(A * A + (B + 1) * (B + 1), 0.5), K)];
+get_fold_special_list(A, B, C, K) when A < K/2 ->
+    [{A, B, C, K} | get_fold_special_list(A + 1, A + 1, math:pow(2 * (A + 1) * (A + 1), 0.5), K)];
+get_fold_special_list(_, _, _, _) -> [].
 
-special_pyth_trip_f(K)->
-    lists:foldl(fun({A, B, C, K1}, Acc)->is_spicial({A, B, C, K1}, Acc) end, {},
+special_pyth_trip_f(K) ->
+    lists:foldl(fun({A, B, C, K1}, Acc) -> is_spicial({A, B, C, K1}, Acc) end, {},
     get_fold_special_list(K)).
 ```
 
@@ -261,29 +261,30 @@ word_sum([Head|Tail], Acc)-> word_sum(Tail, Acc + Head-64).
 ### Реализация с рекурсией
 
 ```erlang
-names_score_r()->
-    names_score_r(read_list_from_file()).
+names_score_r() ->
+    names_score_r(read_list_from_file(), 1).
 
-names_score_r([])-> 0;
-names_score_r([Head|Tail])->names_score_r(Tail) + word_sum(Head).
+names_score_r([], _) -> 0;
+names_score_r([Head | Tail], N) -> names_score_r(Tail, N + 1) + word_sum(Head) * N.
 ```
 
 ### Реализация с хвостовой рекурсией и filter
 
 ```erlang
-names_score()->
-    names_score(0, read_list_from_file()).
+names_score() ->
+    names_score(0, read_list_from_file(), 1).
 
-names_score(Acc, [])-> Acc;
-names_score(Acc, [Head|Tail])->names_score(Acc + word_sum(Head),Tail).
+names_score(Acc, [], _) -> Acc;
+names_score(Acc, [Head | Tail], N) -> names_score(Acc + word_sum(Head) * N, Tail, N + 1).
 ```
 
 ### Реализация со свёрткой
 
 ```erlang
-names_score_f()->
-    lists:foldl(fun word_sum/2, 0,
-    read_list_from_file()).
+names_score_f() ->
+    {A, _} = lists:foldl(fun (List, {Acc, N}) -> {Acc + word_sum(List) * N, N + 1} end, {0, 1},
+    read_list_from_file()),
+    A.
 ```
 
 ## Выводы
