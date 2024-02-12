@@ -1,4 +1,5 @@
 -module(task1_tests).
+
 -include_lib("eunit/include/eunit.hrl").
 
 % Reduce with tail recursion
